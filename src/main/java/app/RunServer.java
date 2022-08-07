@@ -22,9 +22,7 @@ public class RunServer {
         URL resource = RunServer.class.getResource("/swagger-ui");
         File swaggerStaticFilesDir = Paths.get(resource.toURI()).toFile();
 
-//        ResourceConfig config = new RestConfig();
-//        config.packages("io.swagger.jaxrs.listing", "app.api.rest");
-//        config.register(JacksonFeature.class);
+
         ServletContainer servletContainer = new ServletContainer(new RestConfig());
         ServletHolder servletHolder = new ServletHolder(servletContainer);
 

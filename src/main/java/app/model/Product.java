@@ -37,7 +37,6 @@ import java.util.Set;
 @EqualsAndHashCode
 public class Product {
 
-
     /**
      * ID Товара
      */
@@ -107,9 +106,10 @@ public class Product {
     @Setter
     private Set<Receipt> receipts;
 
-
-
-
-
+    @ApiModelProperty(hidden = true)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Getter
+    @Setter
+    private Set<Storage> storages;
 
 }

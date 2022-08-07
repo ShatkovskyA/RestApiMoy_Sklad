@@ -53,7 +53,7 @@ public class RestService {
     @ApiOperation(value = "Доступные операции в рамках данного сервиса")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK",
-                    responseHeaders = {@ResponseHeader(name = "Allow", description = "GET", response = String.class)})
+                    responseHeaders = {@ResponseHeader(name = "Allow", description = "GET, POST, PUT, DELETE", response = String.class)})
     })
     @Path("")
     @OPTIONS
@@ -69,7 +69,6 @@ public class RestService {
 
     @ApiOperation(
             value = "Создание отчета общего списка товаров",
-            // notes = "Нельзя повторно создать товар с тем же именем",
             response = HttpResponseBody.class
     )
     @ApiResponses(value = {
@@ -162,114 +161,5 @@ public class RestService {
 
         return response;
     }
-
-//    @ApiOperation(
-//            value = "Отчёт об остатках товаров на складах",
-//            response = HttpResponseBody.class
-//    )
-//    @ApiResponses(
-//            value = {
-//                    @ApiResponse(code = 400, message = "Date must have format: YYYY-MM-DD"),
-//                    @ApiResponse(code = 500, message = "Exception occurred while sales report calculation")
-//            }
-//    )
-//    @GET
-//    @Path("/remainsreportroduct/{article}/{name}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getRemainsReport(
-//            @ApiParam(value = "Название товара")
-//            @PathParam("name") String name,
-//            @ApiParam(value = "Артикул")
-//            @PathParam("article") String date
-//    ) throws Exception {
-//
-//        HttpResponseBody responseBody = new HttpResponseBody();
-//        LocalDate reportDate = null;
-//
-//        try {
-//            reportDate = LocalDate.parse(date);
-//        } catch (DateTimeException e) {
-//            responseBody.setMessage("Date must have format: YYYY-MM-DD");
-//            responseBody.setCode(Response.Status.BAD_REQUEST.getStatusCode());
-//            responseBody.setCodeMessage(Response.Status.BAD_REQUEST.getReasonPhrase());
-//        }
-//
-//        if (reportDate != null) {
-//            Transaction transaction = null;
-//            try (Session session = HibernateHelper.getInstance().getFactory().openSession()) {
-//                transaction = session.beginTransaction();
-//
-//                CriteriaBuilder builder = session.getCriteriaBuilder();
-//                CriteriaQuery<Purchase> purchaseQuery = builder.createQuery(Purchase.class);
-//                Root<Purchase> purchaseRoot = purchaseQuery.from(Purchase.class);
-//
-//                List<Purchase> purchases = session.createQuery(purchaseQuery.select(purchaseRoot)
-//                                .where(builder.and(builder.lessThanOrEqualTo(purchaseRoot.get("purchaseDate"), reportDate),
-//                                        builder.equal(purchaseRoot.get("product").get("name"), name)))
-//                                .orderBy(builder.asc(purchaseRoot.get("purchaseDate")))
-//                        )
-//                        .list();
-//
-//
-//                builder = session.getCriteriaBuilder();
-//                CriteriaQuery<Tuple> sellingQuery = builder.createTupleQuery();
-//                Root<Selling> sellingRoot = sellingQuery.from(Selling.class);
-//
-//                Tuple sellingCountAndSum = session.createQuery(sellingQuery.multiselect(
-//                                                builder.sumAsLong(sellingRoot.get("productCount")),
-//                                                builder.sumAsDouble(
-//                                                        builder.prod(sellingRoot.get("productCount"), sellingRoot.get("productPrice"))
-//                                                )
-//                                        )
-//                                        .where(builder.and(builder.lessThanOrEqualTo(sellingRoot.get("sellingDate"), reportDate),
-//                                                builder.equal(sellingRoot.get("product").get("name"), name)))
-//                        )
-//                        .getSingleResult();
-//
-//                long sellingProductCount = sellingCountAndSum.get(0, Long.class);
-//                double sellingProductFullPrice = sellingCountAndSum.get(1, Double.class);
-//
-//                long productCount = -sellingProductCount;
-//                double fullPrice = sellingProductFullPrice;
-//                for (Purchase purchase : purchases) {
-//                    if (productCount == 0) {
-//                        break;
-//                    } else {
-//                        if (productCount + purchase.getProductCount() <= 0) {
-//                            productCount += purchase.getProductCount();
-//                            fullPrice -= purchase.getProductCount() * purchase.getProductPrice();
-//                        } else {
-//                            fullPrice -= -productCount * purchase.getProductPrice();
-//                            productCount = 0;
-//                        }
-//                    }
-//                }
-//
-//
-//                responseBody.setCode(Response.Status.OK.getStatusCode());
-//                responseBody.setCodeMessage(Response.Status.OK.getReasonPhrase());
-//
-//                NumberFormat formatter = new DecimalFormat("#0.00");
-//                responseBody.setMessage("Income on " + reportDate + ": [" + formatter.format(fullPrice) + "]");
-//
-//                transaction.commit();
-//            } catch (Exception e) {
-//                if (transaction != null && transaction.isActive()) {
-//                    transaction.rollback();
-//                }
-//
-//                responseBody.setCode(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-//                responseBody.setCodeMessage(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase());
-//                responseBody.setMessage("Exception occurred while sales report calculation");
-//            }
-//        }
-//
-//        Response response = Response.status(responseBody.getCode())
-//                .entity(responseBody)
-//                .build();
-//
-//        return response;
-//    }
-
 
 }
